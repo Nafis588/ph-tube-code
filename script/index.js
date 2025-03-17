@@ -4,6 +4,20 @@ function loadCategories(){
     .then((data) => displayCategories(data.categories));
 }
 function displayCategories(categories){
-    console.log(categories);
+    //console.log(categories);
+
+    //loop operation in object
+    const categoryContainer = document.getElementById("category-container");
+    for(let cat of categories){
+        console.log(cat);
+    
+    //create element
+    const categoryDiv = document.createElement("div");
+    categoryDiv.innerHTML = `
+    <button class="btn btn-sm hover:bg-[#FF1F3D] hover:text-white">${cat.category}</button>
+    `;
+    //append the element
+    categoryContainer.append(categoryDiv);
+    }
 }
 loadCategories();
