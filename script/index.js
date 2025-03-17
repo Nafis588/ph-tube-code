@@ -10,8 +10,8 @@ function loadCategories(){
     .then(res => res.json())
     .then((data) => displayCategories(data.categories));
 };
-function loadVideos(){
-    fetch("https://openapi.programming-hero.com/api/phero-tube/videos")
+function loadVideos(searchText=""){
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${searchText}`)
     .then(res => res.json())
     .then((data) =>{
         document.getElementById("btn-all").classList.add("active");
@@ -33,7 +33,37 @@ const loadCategoryVideos = (id) => {
         displayVideos(data.category)
     });
 }
+const loadVideoDetails = (videoId) => {
+    console.log(videoId);
+    const url=`https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`
+    fetch(url)
+        .then(res => res.json())
+        .then((data) => displayVideoDetails(data.video));
+};
 
+const displayVideoDetails = (video)=>{
+    document.getElementById("video_details").showModal();
+    const details_container = document.getElementById("details_container");
+    details_container.innerHTML = `
+            <div class="card bg-base-100 image-full w-96 shadow-sm">
+        <figure>
+            <img
+            src="${video.thumbnail}"
+            alt="" />
+        </figure>
+        <div class="card-body">
+            
+                    <h2 class="text-lg font-semibold">${video.title}</h2>
+                    <p class="text-sm text-gray-400 flex gap-1">
+                        ${video.authors[0].profile_name} 
+                        <img class=" w-5 h-5"
+                         src="https://img.icons8.com/?size=100&id=98A4yZTt9abw&format=png&color=000000" alt=""> 
+                        </p>
+                    <p class="text-sm text-gray-400 flex gap-1">${video.others.views} views</p>
+        </div>
+        </div>
+    `;
+};
 function displayCategories(categories){
     //console.log(categories);
 
@@ -62,6 +92,7 @@ const displayVideos = (videos) => {
         <div class="col-span-full flex flex-col justify-center items-center text-center py-20">
         <img class="w-[120px]" src="assets/Icon.png" alt="">
         <h2 class=" text-2xl font-bold">Ops!!! There is no content here</h2>
+        
     </div>`;
         return;
     }
@@ -90,12 +121,14 @@ const displayVideos = (videos) => {
                     <h2 class="text-lg font-semibold">${video.title}</h2>
                     <p class="text-sm text-gray-400 flex gap-1">
                         ${video.authors[0].profile_name} 
-                        <img class=" w-5 h-5"
+                        ${video.authors[0].verified == true ? `<img class=" w-5 h-5"
                          src="https://img.icons8.com/?size=100&id=98A4yZTt9abw&format=png&color=000000" alt=""> 
+                        </p>` : `` }
                         </p>
-                    <p class="text-sm text-gray-400 flex gap-1">${video.others.views}</p>
+                    <p class="text-sm text-gray-400 flex gap-1">${video.others.views} views</p>
                 </div>
             </div>
+            <button onclick=loadVideoDetails('${video.video_id}') class="btn btn-block">Show Details</button>
             </div>
         `;
         
@@ -104,5 +137,8 @@ const displayVideos = (videos) => {
         videoContainer.append(videoCard);
     });
 };
-
+document.getElementById('search_input').addEventListener('keyup', (e) => {
+    const input=e.target.value;
+    loadVideos(input);
+});
 loadCategories();
