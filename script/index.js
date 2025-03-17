@@ -1,3 +1,10 @@
+function removeActiveClass(){
+  const activeButtons = document.getElementsByClassName("active");  
+  for(let btn of activeButtons){
+      btn.classList.remove("active");
+  }
+};
+
 function loadCategories(){
     fetch("https://openapi.programming-hero.com/api/phero-tube/categories")
     .then(res => res.json())
@@ -6,14 +13,25 @@ function loadCategories(){
 function loadVideos(){
     fetch("https://openapi.programming-hero.com/api/phero-tube/videos")
     .then(res => res.json())
-    .then((data) => displayVideos(data.videos));
+    .then((data) =>{
+        document.getElementById("btn-all").classList.add("active");
+         displayVideos(data.videos)
+        
+        });
+         
 };
 const loadCategoryVideos = (id) => {
     const url = `https://openapi.programming-hero.com/api/phero-tube/category/${id}`;
     //console.log(url);
     fetch(url)
     .then(res => res.json())
-    .then((data) => displayVideos(data.category));
+    .then((data) => {
+        removeActiveClass();
+        const clickedButton= document.getElementById(`btn-${id}`);
+        clickedButton.classList.add("active");
+        //console.log(clickedButton);
+        displayVideos(data.category)
+    });
 }
 
 function displayCategories(categories){
@@ -27,7 +45,7 @@ function displayCategories(categories){
     //create element
     const categoryDiv = document.createElement("div");
     categoryDiv.innerHTML = `
-    <button onclick="loadCategoryVideos(${cat.category_id})" class="btn btn-sm hover:bg-[#FF1F3D] hover:text-white">${cat.category}</button>
+    <button id="btn-${cat.category_id}" onclick="loadCategoryVideos(${cat.category_id})" class="btn btn-sm hover:bg-[#FF1F3D] hover:text-white">${cat.category}</button>
     `;
     //append the element
     categoryContainer.append(categoryDiv);
@@ -49,7 +67,7 @@ const displayVideos = (videos) => {
     }
     videos.forEach((video) => {
         //console.log(video);
-        console.log(videos.length);
+        //console.log(videos.length);
         const videoCard = document.createElement("div");
         videoCard.innerHTML = `
         <div class="card bg-base-100">
